@@ -32,7 +32,6 @@ R Markdown is a file format for making dynamic documents with R. An R Markdown d
 #install.packages("skimr")
 
 library(tidyverse)
-library(skimr)
 
 fastfood <-read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
 
@@ -79,3 +78,86 @@ fastfood %>%
   filter(restaurant=="Mcdonalds")
 
 ```
+
+<!--Part 2-->
+
+<!--11.	Display the types of variables in the dataset using skimr package-->
+
+```{r}
+library(skimr)
+
+skim(fastfood)
+
+#For this, the skim function will show the type of variables in dataset in the form of summary.
+
+```
+
+<!--12.	Show the count of observations for each restaurant.-->
+
+```{r}
+fastfood %>%
+count(restaurant, sort=TRUE)
+
+#The count function displays the total observations of each restaurant.
+
+```
+
+<!--13.	Using groupings (group_by()), summarise and display the average number of calories for each restaurant.-->
+
+```{r}
+
+fastfood %>%
+  group_by(restaurant) %>%
+  summarise(mean_calories = mean(calories))
+
+#For this, first I group the data by restaurant and then use the summarise function to display the mean or average calories of each restaurant.
+
+```
+
+<!--14.	Add a variable to the dataset, which calculates the average calories per type of restaurant and call it average_calories.-->
+
+```{r}
+
+average_calories<-fastfood %>%
+  group_by(restaurant) %>%
+  mutate(average_calories=mean(calories)) %>%
+  ungroup()
+
+#For this, I have first grouped the variable restaurant and then by using the mean function, I have calculated the average calories per restaurant.
+
+```
+
+<!--15.	Display the data viz of total fat per each type of restaurant. Write a narration (2-3 sentences) why you believe this type of data viz presents such information best.-->
+
+```{r}
+
+library(ggplot2)
+
+ggplot(data = fastfood) +
+geom_point(mapping = aes(x = restaurant, y = total_fat))
+
+# This data visualization shows very precise comparison of each type of restaurant in comparison to total_fat consumed. We can see that Mcdonalds has the highest number of total_fat of '141' while Dairy Queen has the lowest number of total_fat which is '0' in one of its item. It will give an idea to people that which restaurant can be best if they want lower fat component in their meals. 
+
+```
+
+<!--16.	Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it max_total_fat-->
+
+```{r}
+max_total_fat<-fastfood %>%
+  group_by(restaurant) %>%
+  mutate(max_total_fat=max(total_fat)) %>%
+  ungroup()
+
+# For calculation of maximum total_fat, we first group it by the restaurant and then use the mutate function to create new variable as well as use max function inside it for delivering values.
+
+```
+
+<!--17.	Use observations for Mcdonalds to plot sugar variable against protein with geom_point()-->
+
+```{r}
+
+ggplot(data = fastfood) +
+  geom_point(mapping = aes(x = sugar, y = protein, color = "Mcdonalds"))
+
+```
+
