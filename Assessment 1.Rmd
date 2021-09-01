@@ -18,13 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 R Markdown is a file format for making dynamic documents with R. An R Markdown document is written in markdown and contains chunks of embedded R code. R Markdown files are designed to be used with the rmarkdown package.
 
-<!-- 4. Give bold and italics to editing in Heading (***editing***), I use three times *** to show editing word as both bold and italics -->
+<!-- 4. Give bold and italics to editing in Heading (***editing***), I use three times *** to show editing word as both bold and italics as you can see the result in question 2-->
 
 <!-- 5. Include an in-text link -->
 
 [links](https://rmarkdown.rstudio.com/lesson-8.html)
 
-<!-- 6. Insert an R chunk and create a variable with the dataset. We do not need to use readr::read_csv to load data as that's the tidyverse package and we have already that one in library(tidyverse). Read_csv performs the same function and easy to code.-->
+<!-- 6. Insert an R chunk and create a variable with the dataset. I do not need to use readr::read_csv to load data as that's the tidyverse package and we have already that one in library(tidyverse). Read_csv performs the same function and easy to code.-->
 
 ```{r}
 #install.packages
@@ -32,12 +32,12 @@ R Markdown is a file format for making dynamic documents with R. An R Markdown d
 #install.packages("skimr")
 
 library(tidyverse)
-
+library(knitr)
 fastfood <-read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
 
 ```
 <!-- 7.	Display the first 10 rows of the dataset with the first 5 variables. 
-For this, I have used 1:6 instead of 1:5 as the first column shows numbering and is not variable. For rows, I have added 10 in the fastfood column to make it easy to understand.-->
+For this, I have used 1:6 instead of 1:5 as the first column shows numbering and is not variable. For rows, I have added 10 in the same bracket of fastfood to make it easy to understand.-->
 
 ```{r}
 
@@ -50,7 +50,8 @@ For this, I have use the subset function of filter to include above 1000 calorie
 ```{r}
 
 fastfood %>%
-  subset(calories>1000, select=c(restaurant, item, calories))
+  subset(calories>1000, select=c(restaurant, item, calories)) %>%
+  kable()
   
 ```
 <!-- 9.	Save observations with more than 40 in total_fat and more than 80 in total_carb in a new variable (dataset) called dont_eat_this. 
@@ -58,16 +59,18 @@ For this, I have use the mutate function to create a new variable dont_eat_this.
 
 ```{r}
 
-fastfood %>%
-  select(total_fat, total_carb) %>%
-  filter(total_fat>"40", total_carb>"80")
-
 dont_eat_this<- fastfood %>%
-   mutate(dont_eat_this=as.numeric(total_fat>40 & total_carb>80))
+  select(restaurant, item, total_fat, total_carb) %>%
+  filter(total_fat>40, total_carb>80) %>%
+  mutate(dont_eat_this=total_fat>40 & total_carb>80) %>% 
+  arrange(desc(total_fat, total_carb))
 
-#As this is a logical data, so the result would be either a boolean (TRUE or FALSE) or a numeric one by using as.numeric. The parse_number cannot be used here as it is showing error for two values. Now, with as.numeric, it is showing data as numeric in new variable dont_eat_this.
+head(dont_eat_this) %>%
+  select(restaurant, item, total_fat, total_carb, dont_eat_this)
+ 
 
-```
+#As this is a logical data, so the result would be either a boolean (TRUE or FALSE) or a numeric value by using as.numeric. True means that the two variable have the required values. 
+``` 
 
 <!--10.	Using the initial dataset variable, display observations from restaurant Mcdonalds. 
 For this, I filter the restaurant "Mcdonalds" to show only observations related to it-->
@@ -75,7 +78,8 @@ For this, I filter the restaurant "Mcdonalds" to show only observations related 
 ```{r}
 
 fastfood %>%
-  filter(restaurant=="Mcdonalds")
+  filter(restaurant=="Mcdonalds") %>%
+  kable()
 
 ```
 
@@ -96,9 +100,10 @@ skim(fastfood)
 
 ```{r}
 fastfood %>%
-count(restaurant, sort=TRUE)
+count(restaurant,wt=NULL, sort=TRUE, name="restaurant") %>%
+kable()
 
-#The count function displays the total observations of each restaurant.
+#The count function displays the total observations of each restaurant. Here I have used, wt which is weighted value of variable and is taken as Null while sort is taken as TRUE which will give descending order to data, 
 
 ```
 
@@ -108,9 +113,12 @@ count(restaurant, sort=TRUE)
 
 fastfood %>%
   group_by(restaurant) %>%
-  summarise(mean_calories = mean(calories))
+  summarise(average_calories = mean(calories)) %>%
+  ungroup() %>%
+  arrange(desc(average_calories)) %>%
+  kable()
 
-#For this, first I group the data by restaurant and then use the summarise function to display the mean or average calories of each restaurant.
+#For this, first I group the data by restaurant and then use the summarise function to create a new data which displays the mean or average calories of each restaurant.
 
 ```
 
@@ -123,7 +131,10 @@ average_calories<-fastfood %>%
   mutate(average_calories=mean(calories)) %>%
   ungroup()
 
-#For this, I have first grouped the variable restaurant and then by using the mean function, I have calculated the average calories per restaurant.
+head(average_calories) %>%
+  select(restaurant, average_calories)
+
+#For this, I have first grouped the variable restaurant and then by using the mean function, I have calculated the average calories per restaurant. The n=100 displays the 100 rows of the column. Without using the n=100, it will display the default values set in head function which is six rows.
 
 ```
 
@@ -132,11 +143,17 @@ average_calories<-fastfood %>%
 ```{r}
 
 library(ggplot2)
+fastfood %>%
+  group_by(restaurant) %>%
+  summarise(sum_total_fat= sum(total_fat)) %>%
+  ungroup() %>%
+  mutate(restaurant= fct_reorder(restaurant, sum_total_fat)) %>%
+  ggplot(aes(x=restaurant, y=sum_total_fat, fill= restaurant)) +
+  geom_col() +
+  labs(x="Restaurant Names", y="Sum of Total Fat", title="Data Visualization of Total Fat", caption="Bar Graph of Total Fat Per Each Type of Restaurant")
 
-ggplot(data = fastfood) +
-geom_point(mapping = aes(x = restaurant, y = total_fat))
 
-# This data visualization shows very precise comparison of each type of restaurant in comparison to total_fat consumed. We can see that Mcdonalds has the highest number of total_fat of '141' while Dairy Queen has the lowest number of total_fat which is '0' in one of its item. It will give an idea to people that which restaurant can be best if they want lower fat component in their meals. 
+# For this, I used the bar graph as restaurant variable is continuous and the total fat variable is discrete, so bar graph better shows the data visualization of the restaurants versus the sum of total fat. From this data, we can see that the Chick Fil-A has the lowest fat in their meals while Burger King has the highest sum of total fat.
 
 ```
 
@@ -148,16 +165,147 @@ max_total_fat<-fastfood %>%
   mutate(max_total_fat=max(total_fat)) %>%
   ungroup()
 
-# For calculation of maximum total_fat, we first group it by the restaurant and then use the mutate function to create new variable as well as use max function inside it for delivering values.
+head(max_total_fat) %>%
+  select(max_total_fat, restaurant)
+
+# For calculation of maximum total_fat, we first group it by the restaurant and then use the mutate function to create new variable as well as use max function inside it for delivering values. The max total fat value is highest for Mcdonalds which is showed by using the head function and then selecting max total fat against restaurant.
 
 ```
 
 <!--17.	Use observations for Mcdonalds to plot sugar variable against protein with geom_point()-->
 
 ```{r}
+library(ggplot2)
 
-ggplot(data = fastfood) +
-  geom_point(mapping = aes(x = sugar, y = protein, color = "Mcdonalds"))
+fastfood %>%
+  select(restaurant, sugar, protein) %>%
+  filter(restaurant== "Mcdonalds") %>%
+  ggplot(aes(x= sugar, y=protein)) +
+  geom_point(color="red") +
+  labs(x="Sugar", y="Protein", title="Data Visualization of Mcdonalds", caption="Scatterplot of Restaurant Mcdonalds")
+
+#Although both of the variables are discrete but we use geom_point as its mentioned in the question to use it. Otherwise geom_point can only be used with two continuous variables.
+```
+
+<!--Part 3-->
+
+<!--18.	Identify variable(s) which should be factors and transform their type into a factor variable.-->
+
+```{r}
+
+library(forcats)
+
+#is.factor(fastfood$restaurant, item and salad)
+
+# The is.factor tells us if the column has the categorical data or not.
+
+as.factor(fastfood$restaurant)
+as.factor(fastfood$item)
+as.factor(fastfood$salad)
+
+
+ # The as.factor function converts a variable into a factor, but preserves variable and value label attributes. In this case, variables such as restaurant, item and salad can be transformed into factors as they are only categorical variables in the dataset while all others are numerical. 
+ 
+```
+
+<!--19.	Create two new variables:
+Read about cut_number() function using Help and add a new variable to the dataset calories_type. Use calories variable for cut_number() function to split it into 3 categories n=3, add labels labels=c("low", "med", "high") and make the dataset ordered.-->
+
+```{r}
+
+calories_type<-fastfood %>% 
+  group_by(restaurant) %>%
+  ungroup() %>%
+  mutate(calories_type = cut_number(calories, n = c(3),labels=c("low", "med", "high"))) %>%
+  arrange(desc(calories_type))
+
+head(calories_type) %>% 
+  select(restaurant, item, calories, calories_type)
+  
+  
+# First, I created a new variable using mutate and then use cut function to put the values of calories in the new variable in labels of low, medium and high and then I arrange the values of it in descending order by using arrange function.
+```
+
+<!--20.	Create a dataviz that shows the distribution of calories_type in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.-->
+
+```{r}
+
+calories_type %>% 
+  group_by(restaurant) %>%
+  ungroup() %>%
+  ggplot(aes(x = restaurant, y = calories_type, fct_reorder(restaurant, calories_type))) +
+  geom_point(color="red") +
+  facet_wrap(~restaurant) +
+  coord_flip() +
+  theme_bw() +
+  labs(x="Restaurant", y="Calories_type", title="Data Visualization of Distribution of Calories Type for Each Restaurants ", caption="Scatterplot of Restaurant Versus Calories Type")
+
+# For this, I have used the geom_point as the data visualization is between two continuous variables, so geom_point is the appropriate one according to cheatsheet of ggplot2. 
+
+```
+
+<!--21.	The second variable should show the percentage of trans_fat in total_fat. Add the variable to the dataset and call it trans_fat_percent.-->
+
+```{r}
+
+trans_fat_percent<-fastfood %>%
+  group_by(restaurant) %>%
+  mutate(trans_fat_percent=trans_fat/total_fat* 10) %>%
+  ungroup() %>%
+  arrange(desc(trans_fat_percent))
+
+head(trans_fat_percent) %>% 
+  select(restaurant, item, trans_fat, total_fat, trans_fat_percent)
+
+#For this, I have divided the trans_fat by total fat and multiply with 10 to give the exact percentage in the new variable 'trans_fat_percent'.
+
+```
+
+<!--22.	Create a dataviz that shows the distribution of trans_fat in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.-->
+
+```{r}
+
+fastfood %>% 
+  group_by(restaurant) %>%
+  ungroup() %>%
+  ggplot(aes(x = restaurant, y = trans_fat, fill=trans_fat)) +
+  geom_col() +
+  facet_wrap(~restaurant) +
+  coord_flip() +
+  theme_bw() +
+  labs(x="Restaurant", y="Trans_Fat", title="Data Visualization of Distribution of Trans Fat for Each Restaurant ", caption="Bar Graph of Restaurant Versus Trans Fat")
+
+# For this, I have used the geom_col as the data visualization is between one continuous variables which is restaurant and other discrete one which is trans_fat. 
+
+```
+
+<!--23.	Calculate and show the average (mean) total_fat for each type of restaurant. No need to save it as a variable.-->
+
+```{r}
+fastfood %>% 
+  group_by(restaurant) %>%
+  summarize(avg_of_total_fat = mean(total_fat)) %>%
+  ungroup() %>%
+  arrange(desc(avg_of_total_fat)) %>%
+  kable()
+
+```
+
+<!--24.	And create a dataviz that allow to compare different restaurants on this variable (total_fat). You can present it on one dataviz (= no facets).Think carefully about the choice of data viz. Use coordinates and theme layers to make your data viz visually appealing and meaningful.-->
+
+```{r}
+
+fastfood %>% 
+  group_by(restaurant) %>%
+  ungroup() %>%
+  ggplot(aes(x = restaurant, y = total_fat, fill = total_fat)) +
+  geom_col()+
+  coord_flip() +
+  theme_bw() +
+  labs(x="Restaurant", y="Total Fat", title="Data Visualization of Different Restaurants in Comparison to Total Fat", caption="Bar Graph of Restaurant Versus Total Fat")
+
+#For this, I have used the geom_col graph as the data visualization is between one continuous variables which is restaurant and other discrete one which is total fat. I have tried boxplot graph also but the geom_col graph shows the result more appealing, so I used this one. 
+
 
 ```
 
