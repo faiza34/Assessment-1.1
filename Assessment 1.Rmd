@@ -2,29 +2,35 @@
 title: "Assessment 1.1"
 author: "Syeda Faiza Hussain - s4647284"
 date: "22/08/2021"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+### Part 1
 
-<!--2. Create Heading -->
+**2.Create the heading of the first level and call it RMarkdown editing**
 
 # RMarkdown ***editing***
 
-<!-- 3. Sentences about RMarkdown -->
+**3. Write 2-3 sentences about RMarkdown, no need to reference)**
 
 R Markdown is a file format for making dynamic documents with R. An R Markdown document is written in markdown and contains chunks of embedded R code. R Markdown files are designed to be used with the rmarkdown package.
 
-<!-- 4. Give bold and italics to editing in Heading (***editing***), I use three times *** to show editing word as both bold and italics as you can see the result in question 2-->
+**4. Give bold and italics to editing in Heading**
 
-<!-- 5. Include an in-text link -->
+For this, I have used three times (***) to show editing word as both bold and italics as you can see the result in question 2.
+
+**5. Include an in-text link**
 
 [links](https://rmarkdown.rstudio.com/lesson-8.html)
 
-<!-- 6. Insert an R chunk and create a variable with the dataset. I do not need to use readr::read_csv to load data as that's the tidyverse package and we have already that one in library(tidyverse). Read_csv performs the same function and easy to code.-->
+**6. Insert an R chunk and create a variable with the dataset.**
+I do not need to use readr::read_csv to load data as that's the tidyverse package and we have already that one in library(tidyverse). Read_csv performs the same function and easy to code.
 
 ```{r}
 #install.packages
@@ -36,16 +42,18 @@ library(knitr)
 fastfood <-read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
 
 ```
-<!-- 7.	Display the first 10 rows of the dataset with the first 5 variables. 
-For this, I have used 1:6 instead of 1:5 as the first column shows numbering and is not variable. For rows, I have added 10 in the same bracket of fastfood to make it easy to understand.-->
+**7.	Display the first 10 rows of the dataset with the first 5 variables.** 
+
+For this, I have used 1:6 instead of 1:5 as the first column shows numbering and is not variable. For rows, I have added 10 in the same bracket of fastfood to make it easy to understand.
 
 ```{r}
 
 knitr::kable(head(fastfood[, 1:6], 10), "pipe")
 
 ```
-<!-- 8.	Display the observations that has more than 1000 calories.
-For this, I have use the subset function of filter to include above 1000 calories and select the observations which are mainly linked to the variables such as restaurant and item. -->
+**8.	Display the observations that has more than 1000 calories.**
+
+For this, I have use the subset function of filter to include above 1000 calories and select the observations which are mainly linked to the variables such as restaurant and item.
 
 ```{r}
 
@@ -54,8 +62,9 @@ fastfood %>%
   kable()
   
 ```
-<!-- 9.	Save observations with more than 40 in total_fat and more than 80 in total_carb in a new variable (dataset) called dont_eat_this. 
-For this, I have use the mutate function to create a new variable dont_eat_this.-->
+**9.	Save observations with more than 40 in total_fat and more than 80 in total_carb in a new variable (dataset) called dont_eat_this.**
+
+For this, I have use the mutate function to create a new variable dont_eat_this.
 
 ```{r}
 
@@ -72,8 +81,9 @@ head(dont_eat_this) %>%
 #As this is a logical data, so the result would be either a boolean (TRUE or FALSE) or a numeric value by using as.numeric. True means that the two variable have the required values. 
 ``` 
 
-<!--10.	Using the initial dataset variable, display observations from restaurant Mcdonalds. 
-For this, I filter the restaurant "Mcdonalds" to show only observations related to it-->
+**10.	Using the initial dataset variable, display observations from restaurant Mcdonalds.**
+
+For this, I filter the restaurant "Mcdonalds" to show only observations related to it.
 
 ```{r}
 
@@ -83,9 +93,9 @@ fastfood %>%
 
 ```
 
-<!--Part 2-->
+### Part 2
 
-<!--11.	Display the types of variables in the dataset using skimr package-->
+**11.	Display the types of variables in the dataset using skimr package**
 
 ```{r}
 library(skimr)
@@ -96,7 +106,7 @@ skim(fastfood)
 
 ```
 
-<!--12.	Show the count of observations for each restaurant.-->
+**12.	Show the count of observations for each restaurant.**
 
 ```{r}
 fastfood %>%
@@ -107,7 +117,7 @@ kable()
 
 ```
 
-<!--13.	Using groupings (group_by()), summarise and display the average number of calories for each restaurant.-->
+**13.	Using groupings (group_by()), summarise and display the average number of calories for each restaurant.**
 
 ```{r}
 
@@ -122,7 +132,7 @@ fastfood %>%
 
 ```
 
-<!--14.	Add a variable to the dataset, which calculates the average calories per type of restaurant and call it average_calories.-->
+**14.	Add a variable to the dataset, which calculates the average calories per type of restaurant and call it average_calories.**
 
 ```{r}
 
@@ -138,7 +148,7 @@ head(average_calories) %>%
 
 ```
 
-<!--15.	Display the data viz of total fat per each type of restaurant. Write a narration (2-3 sentences) why you believe this type of data viz presents such information best.-->
+**15.	Display the data viz of total fat per each type of restaurant. Write a narration (2-3 sentences) why you believe this type of data viz presents such information best.**
 
 ```{r}
 
@@ -157,7 +167,7 @@ fastfood %>%
 
 ```
 
-<!--16.	Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it max_total_fat-->
+**16.	Add a variable to the dataset, which calculates the maximum total fat per type of restaurant and call it max_total_fat**
 
 ```{r}
 max_total_fat<-fastfood %>%
@@ -172,7 +182,7 @@ head(max_total_fat) %>%
 
 ```
 
-<!--17.	Use observations for Mcdonalds to plot sugar variable against protein with geom_point()-->
+**17.	Use observations for Mcdonalds to plot sugar variable against protein with geom_point()**
 
 ```{r}
 library(ggplot2)
@@ -187,9 +197,9 @@ fastfood %>%
 #Although both of the variables are discrete but we use geom_point as its mentioned in the question to use it. Otherwise geom_point can only be used with two continuous variables.
 ```
 
-<!--Part 3-->
+### Part 3
 
-<!--18.	Identify variable(s) which should be factors and transform their type into a factor variable.-->
+**18. Identify variable(s) which should be factors and transform their type into a factor variable.**
 
 ```{r}
 
@@ -203,13 +213,11 @@ as.factor(fastfood$restaurant)
 as.factor(fastfood$item)
 as.factor(fastfood$salad)
 
-
  # The as.factor function converts a variable into a factor, but preserves variable and value label attributes. In this case, variables such as restaurant, item and salad can be transformed into factors as they are only categorical variables in the dataset while all others are numerical. 
  
 ```
 
-<!--19.	Create two new variables:
-Read about cut_number() function using Help and add a new variable to the dataset calories_type. Use calories variable for cut_number() function to split it into 3 categories n=3, add labels labels=c("low", "med", "high") and make the dataset ordered.-->
+**19.	Create two new variables:Read about cut_number() function using Help and add a new variable to the dataset calories_type. Use calories variable for cut_number() function to split it into 3 categories n=3, add labels labels=c("low", "med", "high") and make the dataset ordered.**
 
 ```{r}
 
@@ -226,7 +234,7 @@ head(calories_type) %>%
 # First, I created a new variable using mutate and then use cut function to put the values of calories in the new variable in labels of low, medium and high and then I arrange the values of it in descending order by using arrange function.
 ```
 
-<!--20.	Create a dataviz that shows the distribution of calories_type in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.-->
+**20.	Create a dataviz that shows the distribution of calories_type in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful. Use factors related data viz functions.**
 
 ```{r}
 
@@ -244,7 +252,7 @@ calories_type %>%
 
 ```
 
-<!--21.	The second variable should show the percentage of trans_fat in total_fat. Add the variable to the dataset and call it trans_fat_percent.-->
+**21.	The second variable should show the percentage of trans_fat in total_fat. Add the variable to the dataset and call it trans_fat_percent.**
 
 ```{r}
 
@@ -261,7 +269,7 @@ head(trans_fat_percent) %>%
 
 ```
 
-<!--22.	Create a dataviz that shows the distribution of trans_fat in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.-->
+**22.	Create a dataviz that shows the distribution of trans_fat in food items for each type of restaurant. Think carefully about the choice of data viz. Use facets, coordinates and theme layers to make your data viz visually appealing and meaningful.**
 
 ```{r}
 
@@ -279,7 +287,7 @@ fastfood %>%
 
 ```
 
-<!--23.	Calculate and show the average (mean) total_fat for each type of restaurant. No need to save it as a variable.-->
+**23.	Calculate and show the average (mean) total_fat for each type of restaurant. No need to save it as a variable.**
 
 ```{r}
 fastfood %>% 
@@ -291,7 +299,7 @@ fastfood %>%
 
 ```
 
-<!--24.	And create a dataviz that allow to compare different restaurants on this variable (total_fat). You can present it on one dataviz (= no facets).Think carefully about the choice of data viz. Use coordinates and theme layers to make your data viz visually appealing and meaningful.-->
+**24.	And create a dataviz that allow to compare different restaurants on this variable (total_fat). You can present it on one dataviz (= no facets).Think carefully about the choice of data viz. Use coordinates and theme layers to make your data viz visually appealing and meaningful.**
 
 ```{r}
 
